@@ -14,9 +14,14 @@ namespace UserControl
 {
     public partial class Form1 : Form
     {
+        /*
+        Create a delegate that will allow the thread to
+        print output to the textbox.
+        */
         private delegate void PrintResult();
         private PrintResult formDelegate;
-        string resultString;
+
+        string resultString;    // Used to get output from thread into main thread
 
         readonly object stopLock = new object();
         bool stopping = false;
@@ -33,6 +38,7 @@ namespace UserControl
             Btn_StopThread.BackColor = Color.Gray;
             Btn_StopThread.Text = "Stop";
 
+            // Create and start a single thread
             Thread thread = new Thread(new ThreadStart(ThreadOutput));
             thread.Start();
             Debug.WriteLine("Thread started.");
@@ -53,7 +59,7 @@ namespace UserControl
         {
             try
             {
-                while (!Stopping)
+                while (!Stopping)   // Loop until 'stopping' is set to 'true'
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -73,6 +79,7 @@ namespace UserControl
 
         public void PrintThreadResult()
         {
+            // Append output from worker thread
             Txt_Results.AppendText(GetResultString());
         }
 
