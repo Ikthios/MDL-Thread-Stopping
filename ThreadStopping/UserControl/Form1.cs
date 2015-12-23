@@ -38,6 +38,9 @@ namespace UserControl
             Btn_StopThread.BackColor = Color.Gray;
             Btn_StopThread.Text = "Stop";
 
+            // Reset thread loop values so we can start the thread again.
+            stopping = false;
+
             // Create and start a single thread
             Thread thread = new Thread(new ThreadStart(ThreadOutput));
             thread.Start();
@@ -61,6 +64,9 @@ namespace UserControl
             {
                 while (!Stopping)   // Loop until 'stopping' is set to 'true'
                 {
+                    /*
+                    All thread work code goes inside this loop.
+                    */
                     for (int i = 0; i < 5; i++)
                     {
                         SetResultString(i.ToString() + " Hello\n");
@@ -71,9 +77,9 @@ namespace UserControl
                     if (stopping) { return; }
                 }
             }
-            finally
+            catch(Exception ex)
             {
-                SetStopped();
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -90,9 +96,12 @@ namespace UserControl
         /*
         Code below deals with gracefully stopping the thread
         Referenced from http://www.yoda.arachsys.com/csharp/threads/shutdown.shtml
+
+        The 'lock' keyword forces mutual exlusion by allowing only
+        one thread to access each method at a time.
         */
 
-        
+        // Returns whether the worker is in the process of stopping
         public bool Stopping
         {
             get
